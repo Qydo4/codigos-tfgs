@@ -1,0 +1,22 @@
+#include <SoftwareSerial.h>
+
+const int tofTxPin = 0;
+const int tofRxPin = 1;
+
+SoftwareSerial ToFSerial(tofRxPin, tofTxPin);
+
+void setup() {
+  Serial.begin(9600);
+  ToFSerial.begin(115200);
+  Serial.println("Escuchando cualquier dato del sensor ToF...");
+}
+
+void loop() {
+  if (ToFSerial.available()) {
+    byte dato = ToFSerial.read();
+    Serial.print("0x");
+    if (dato < 16) Serial.print("0");
+    Serial.print(dato, HEX);
+    Serial.print(" ");
+  }
+}
