@@ -1,0 +1,40 @@
+#include <SoftwareSerial.h>
+
+const int botonPin = 7;
+const int tofTxPin = 2;
+const int tofRxPin = 3;
+
+SoftwareSerial ToFSerial(tofRxPin, tofTxPin);
+
+void setup() {
+  Serial.begin(9600);
+  pinMode(botonPin, INPUT_PULLUP);
+  ToFSerial.begin(9600);
+  Serial.println("Telemetro ToF - Diagnóstico");
+}
+
+void solicitarMedida() {
+  byte comando[] = { 0x5A, 0x05, 0x00, 0x01, 0x60 };
+  for (int i = 0; i < 5; i++) {
+    ToFSerial.write(comando[i]);
+  }
+  Serial.println("Comando enviado al sensor.");
+}
+
+void loop() {
+  if (digitalRead(botonPin) == LOW) {
+    solicitarMedida();
+    delay(100);
+
+    Serial.print("Respuesta vacía: ");
+    while (ToFSerial.available()) {
+      byte dato = ToFSerial.read();
+      Serial.print("0x");
+      if (dato < 16) Serial.print("0");
+      Serial.print(dato, HEX);
+      Serial.print(" ");
+    }
+    Serial.println();
+    delay(500);
+  }
+}
